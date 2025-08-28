@@ -17,11 +17,23 @@
  * Two-dimensional arrays can be expressed using the T[][].
  *
  *  ## Examples
+ *            0    1    2    3             0,0, 0,1, 1,0, 1,1
  *  _.chunk(["a", "b", "c", "d"], 2) => [["a", "b"], ["c", "d"]]
+ * 
+ *            0    1    2    3             0,0, 0,1, 0,2,   1,0
  *  _.chunk(["a", "b", "c", "d"], 3) => [["a", "b", "c"], ["d"]]
  *  _.chunk(["a", "b", "c"]) => [["a"], ["b"], ["c"]]
  * */
-export function chunk() {
+export function chunk<E>(array: E[], size?: number): E[][] {
+  if (!size) { size = 1; }
+  let result: E[][] = []
+  for (let i = 0; i < Math.ceil(array.length / size); i++) {
+    result.push(Array<E>(0));
+  }
+  array.forEach((item, index) => {
+    result[Math.floor(index / size)].push(item);
+  });
+  return result;
 }
 
 /**
@@ -37,7 +49,8 @@ export function chunk() {
  * _.compact([1, 0, 2, 0, 3]) => [1, 2, 3]
  * _.compact([1, undefined, NaN, null, 0, 2, 3]) => [1, 2, 3]
  */
-export function compact() {
+export function compact<E>(array: E[]): E[] {
+  return array.filter((item) => !!item);
 }
 
 /**
@@ -48,7 +61,8 @@ export function compact() {
  *  _.head([1, 2, 3]) => 1
  *  _.head([]) => undefined
  */
-export function head() {
+export function head<E>(array: E[]): E {
+  return array[0];
 }
 
 /**
@@ -59,7 +73,8 @@ export function head() {
  *  _.initial<number>([1, 2, 3]) => [1, 2]
  *
  */
-export function initial() {
+export function initial<E>(array: E[]): E[] {
+  return array.slice(0, -1);
 }
 
 /**
@@ -71,7 +86,8 @@ export function initial() {
  * _.last([]) => undefined
  *
  */
-export function last() {
+export function last<E>(array: E[]): E {
+  return array[array.length - 1];
 }
 
 /**
@@ -84,7 +100,9 @@ export function last() {
  * _.drop([1, 2, 3, 4], 2) => [3, 4]
  * _.drop([1, 2, 3, 4]) => [2, 3, 4]
  */
-export function drop() {
+export function drop<E>(array: E[], count?: number): E[] {
+  if (!count) { count = 1; }
+  return array.slice(count);
 }
 
 /**
@@ -97,7 +115,9 @@ export function drop() {
  * _.dropRight([1, 2, 3, 4]) => [1, 2, 3]
  *
  */
-export function dropRight() {
+export function dropRight<E>(array: E[], count?: number): E[] {
+  if (!count) { count = 1; }
+  return array.slice(0, -count);
 }
 
 interface DropWhilePredicate<T> {
@@ -113,6 +133,7 @@ interface DropWhilePredicate<T> {
 *
 */
 export function dropWhile<T>(collection: Array<T>, predicate: DropWhilePredicate<T>): Array<T> {
+  return collection.slice(collection.findIndex((item) => !predicate(item)));
 }
 
 /**
@@ -124,7 +145,11 @@ export function dropWhile<T>(collection: Array<T>, predicate: DropWhilePredicate
  * _.dropRightWhile([5, 4, 3, 2, 1], value => value < 3) => [5, 4, 3]
  *
  */
-export function dropRightWhile() {
+export function dropRightWhile<T>(collection: Array<T>, predicate: DropWhilePredicate<T>): Array<T> {
+  let lastIndex = collection.map((item, index) => {
+    return !predicate(item, index, collection);
+  }).lastIndexOf(true)
+  return collection.slice(0, lastIndex + 1);
 }
 
 /**
@@ -135,11 +160,18 @@ export function dropRightWhile() {
  * ## Examples
  * _.fill<any>([4, 6, 8, 10], "* ", 1, 3) => [4, "* ", "* ", 10]
  */
-export function fill() {
+export function fill<E>(array: E[], value: E, start?: number, end?: number): E[] {
+  if (!start) { start = 0; }
+  if (!end) { end = array.length; }
+  for (let i = start; i < end; i++) {
+    array[i] = value;
+  }
+  return array;
 }
 
 // Here we define an interface for the predicate used in the findIndex function.
-export interface FindIndexPredicate {
+export interface FindIndexPredicate<T> {
+  (value?: T): boolean;
 }
 
 /**
@@ -155,7 +187,14 @@ export interface FindIndexPredicate {
  * _.findIndex([4, 6, 6, 8, 10], value => value === 6, 2) => 2
  *
  */
-export function findIndex() {
+export function findIndex<T>(array: Array<T>, predicate: FindIndexPredicate<T>, fromIndex?: number): number {
+  if (!fromIndex) { fromIndex = 0; }
+  for (let i = fromIndex; i < array.length; i++) {
+    if (predicate(array[i])) {
+      return i;
+    }
+  }
+  return -1;
 }
 
 /**
@@ -170,7 +209,14 @@ export function findIndex() {
  * _.findLastIndex([4, 6, 6, 8, 10], value => value === 6, 1) => 1
  *
  */
-export function findLastIndex() {
+export function findLastIndex<T>(array: Array<T>, predicate: FindIndexPredicate<T>, fromIndex?: number): number {
+  if (!fromIndex) { fromIndex = array.length - 1; }
+  for (let i = fromIndex; i >=0; i--) {
+    if (predicate(array[i])) {
+      return i;
+    }
+  }
+  return -1;
 }
 
 /**
@@ -184,7 +230,8 @@ export function findLastIndex() {
  * _.nth<number>([1, 2, 3]) => 1
  *
  */
-export function nth() {
+export function nth<T>(array: Array<T>, n: number): T {
+  return array[n];
 }
 
 /**
@@ -194,5 +241,6 @@ export function nth() {
  * // We can also use something called "union types" here.
  * _.zip<string | number | boolean>(["a", "b"], [1, 2], [true, false]) => [["a", 1, true], ["b", 2, false]]
  */
-export function zip() {
+export function zip<T>(...arrays: Array<T>): Array<Array<T>> {
+  return []
 }
