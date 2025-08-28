@@ -91,6 +91,7 @@ describe("02_array", function () {
   describe("dropRightWhile", function () {
     it("should ignore items until predicate returns true in reversed order", function () {
       expect(_.dropRightWhile([ 5, 4, 3, 2, 1 ], value => value < 3)).to.deep.equal([ 5, 4, 3 ]);
+      expect(_.dropRightWhile([ 5, 4, 3, 2, 1 ], value => value < 0)).to.deep.equal([ 5, 4, 3 , 2, 1]);
     });
   });
 
