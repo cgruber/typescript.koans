@@ -3,7 +3,17 @@
     "outDir": "./dist/",
     "module": "commonjs",
     "target": "es5",
+    "lib": ["es2015"],
     "noImplicitAny": false,
-    "sourceMap": false
+    "sourceMap": false,
+    "typeRoots": ["./node_modules/@types"],
+    "types": ["chai", "mocha", "sinon"],
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true
+  },
+  "ts-node": {
+    "transpileOnly": true,
+    "typeCheck": false
   }
 }
